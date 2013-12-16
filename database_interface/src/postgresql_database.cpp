@@ -63,8 +63,13 @@ public:
 void PostgresqlDatabase::pgMDBconstruct(std::string host, std::string port, std::string user,
 						 std::string password, std::string dbname )
 {
-  std::string conn_info = "host=" + host + " port=" + port + 
-    " user=" + user + " password=" + password + " dbname=" + dbname;
+  std::string conn_info;
+  //adding empty strings can cause weird things, as they are not expected to be empty
+  if (!host.empty()) conn_info += "host=" + host;
+  if (!port.empty()) conn_info += " port=" + port;
+  if (!user.empty()) conn_info += " user=" + user;
+  if (!password.empty()) conn_info += " password=" + password;
+  if (!dbname.empty()) conn_info += " dbname=" + dbname;
   connection_= PQconnectdb(conn_info.c_str());
   if (PQstatus(connection_)!=CONNECTION_OK) 
   {
