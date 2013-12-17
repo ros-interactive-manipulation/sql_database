@@ -7,8 +7,8 @@
     encapsulate the conceptual "objects" contained in the database as
     C++ classes.
   </description>
-  <maintainer email="matei@willowgarage.com">Matei Ciocarlie</maintainer>
-  <author>Lorenz Mosenlechner</author>
+  <maintainer email="matei.ciocarlie@gmail.com">Matei Ciocarlie</maintainer>
+  <author>Matei Ciocarlie and Lorenz Mosenlechner</author>
   <license>BSD</license>
   <url>http://ros.org/wiki/database_interface</url>
 
