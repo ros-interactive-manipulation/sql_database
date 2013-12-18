@@ -226,7 +226,7 @@ class PostgresqlDatabase
   bool checkNotify(Notification &no);
 
   //! Checks for a notification, but waits until something on the socket happens
-  bool checkNotifyIdle(Notification &no);
+  bool waitForNotify(Notification &no);
 
 };
 

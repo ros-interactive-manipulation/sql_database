@@ -890,7 +890,6 @@ bool PostgresqlDatabase::checkNotify(Notification &no)
     no.sending_pid = notify->be_pid;
     no.payload = notify->extra;
     PQfreemem(notify);
-    return true;
   }
   else
   {
@@ -898,33 +897,33 @@ bool PostgresqlDatabase::checkNotify(Notification &no)
     no.sending_pid = 0;
     no.payload = "";
     PQfreemem(notify);
-    return false;
   }
+  return true;
 }
 
 /*! Checks for a notify and just exits, if there's an error of a received NOTIFY */
-bool PostgresqlDatabase::checkNotifyIdle(Notification &no)
+bool PostgresqlDatabase::waitForNotify(Notification &no)
 {
   int sock;
   fd_set input_mask;
   while (true)
   {
-      // Sleep until something happens on the connection.
-      sock = PQsocket(connection_);     
-      if (sock < 0)
-      {
-        break;
-      }
-      FD_ZERO(&input_mask);
-      FD_SET(sock, &input_mask);
+    // Sleep until something happens on the connection.
+    sock = PQsocket(connection_);     
+    if (sock < 0)
+    {
+      break;
+    }
+    FD_ZERO(&input_mask);
+    FD_SET(sock, &input_mask);
 
-      if (select(sock + 1, &input_mask, NULL, NULL, NULL) < 0)
-      {
-        ROS_WARN("Select() on the database connection failed: %s\n", strerror(errno));
-        break;
-      }
-      // Check for input
-      if (checkNotify(no)) return true;
+    if (select(sock + 1, &input_mask, NULL, NULL, NULL) < 0)
+    {
+      ROS_WARN("Select() on the database connection failed: %s\n", strerror(errno));
+      break;
+    }
+    // Check for input
+    if (checkNotify(no)) return true;
   }
   return false;
 }
