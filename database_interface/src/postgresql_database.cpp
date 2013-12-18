@@ -877,12 +877,19 @@ bool PostgresqlDatabase::unlistenToChannel(std::string channel)
   return true;
 }
 
-/*! Checks for a received NOTIFY and returns it. */
+/*! Checks for a received NOTIFY and returns it. Returns false if there is a connection problem.
+    If there isn't a notification retreived, the Notification-object will have empty strings and
+    "0" as sending_pid.
+ */
 bool PostgresqlDatabase::checkNotify(Notification &no)
 {
   PGnotify *notify;
   //check for a notify on the connection
-  PQconsumeInput(connection_);
+  if (!PQconsumeInput(connection_))
+  {
+    ROS_ERROR("Consume input failed with error message: %s", PQerrorMessage(connection_));
+    return false;
+  }
   //deal with the received object
   if ((notify = PQnotifies(connection_)) != NULL)
   {
@@ -901,7 +908,7 @@ bool PostgresqlDatabase::checkNotify(Notification &no)
   return true;
 }
 
-/*! Checks for a notify and just exits, if there's an error of a received NOTIFY */
+/*! Checks for a notify and just exits, if there's an error or a received NOTIFY */
 bool PostgresqlDatabase::waitForNotify(Notification &no)
 {
   int sock;
@@ -923,7 +930,9 @@ bool PostgresqlDatabase::waitForNotify(Notification &no)
       break;
     }
     // Check for input
-    if (checkNotify(no)) return true;
+    if (!checkNotify(no)) return false;
+    // Exit if we have a notification
+    if (no.sending_pid != 0) return true;
   }
   return false;
 }
