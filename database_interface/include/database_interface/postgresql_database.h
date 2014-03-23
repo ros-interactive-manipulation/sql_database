@@ -45,6 +45,18 @@
 #include <ros/ros.h>
 #include <yaml-cpp/yaml.h>
 
+#ifdef HAVE_NEW_YAMLCPP
+namespace YAML {
+// The >> operator disappeared in yaml-cpp 0.5, so this function is
+// added to provide support for code written under the yaml-cpp 0.3 API.
+template<typename T>
+void operator >> (const YAML::Node& node, T& i)
+{
+  i = node.as<T>();
+}
+}
+#endif
+
 #include "database_interface/db_class.h"
 #include "database_interface/db_filters.h"
 
