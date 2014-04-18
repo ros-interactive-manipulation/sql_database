@@ -45,18 +45,6 @@
 #include <ros/ros.h>
 #include <yaml-cpp/yaml.h>
 
-#ifdef HAVE_NEW_YAMLCPP
-namespace YAML {
-// The >> operator disappeared in yaml-cpp 0.5, so this function is
-// added to provide support for code written under the yaml-cpp 0.3 API.
-template<typename T>
-void operator >> (const YAML::Node& node, T& i)
-{
-  i = node.as<T>();
-}
-}
-#endif
-
 #include "database_interface/db_class.h"
 #include "database_interface/db_filters.h"
 
@@ -97,14 +85,7 @@ public:
 /*!
  *\brief Loads YAML doc into configuration params. Throws YAML::ParserException if keys missing.
  */
-inline void operator>>(const YAML::Node& node, PostgresqlDatabaseConfig &options)
-{
-  node["password"] >> options.password_;
-  node["user"] >> options.user_;
-  node["host"] >> options.host_;
-  node["port"] >> options.port_;
-  node["dbname"] >> options.dbname_;
-}
+void operator>>(const YAML::Node& node, PostgresqlDatabaseConfig &options);
 
 class PostgresqlDatabase
 {

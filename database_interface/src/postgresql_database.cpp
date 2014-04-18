@@ -44,6 +44,23 @@
 
 namespace database_interface {
 
+void operator>>(const YAML::Node& node, PostgresqlDatabaseConfig &options)
+{
+#ifdef HAVE_NEW_YAMLCPP
+  options.password_ = node["password"].as<std::string>();
+  options.user_ = node["user"].as<std::string>();
+  options.host_ = node["host"].as<std::string>();
+  options.port_ = node["port"].as<std::string>();
+  options.dbname_ = node["dbname"].as<std::string>();
+#else
+  node["password"] >> options.password_;
+  node["user"] >> options.user_;
+  node["host"] >> options.host_;
+  node["port"] >> options.port_;
+  node["dbname"] >> options.dbname_;
+#endif
+}
+
 /*! A little helper class to behave much like an auto ptr for the
   PGresult, except that instead of deleting it when it goes out of
   scope, it calls PQclear() on it.
