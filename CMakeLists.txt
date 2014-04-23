@@ -13,7 +13,7 @@ include_directories(database_interface/include)
 
 # There's no version hint in the yaml-cpp headers, so get the version number
 # from pkg-config.
-find_package(PkgConfig)
+find_package(PkgConfig REQUIRED)
 pkg_search_module(yaml-cpp REQUIRED yaml-cpp)
 
 if(NOT ${yaml-cpp_VERSION} VERSION_LESS "0.5")
